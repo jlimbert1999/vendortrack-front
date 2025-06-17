@@ -27,7 +27,9 @@ import { InfiniteScrollWrapperComponent, PdfService } from '../../../../shared';
     <h2 mat-dialog-title>Historial de Certificados</h2>
     <mat-dialog-content>
       <div class="py-2 w-full"></div>
-      @if(isLoading()){ } @else {
+      @if(isLoading()){
+      <div class="flex flex"></div>
+      } @else { @if(certificates().length>0){
       <div class="h-[400px] overflow-y-auto" #containerRef>
         <infinite-scroll-wrapper
           [containerRef]="containerRef"
@@ -42,11 +44,11 @@ import { InfiniteScrollWrapperComponent, PdfService } from '../../../../shared';
                 Código: {{ cert.code }}
               </p>
               <p class="text-sm text-gray-500">
-                Vigencia: {{ cert.startDate | date : 'longDate' }} -
-                {{ cert.endDate | date : 'longDate' }}
+                Vigencia: {{ cert.startDate | date : 'shortDate' }} -
+                {{ cert.endDate | date : 'shortDate' }}
               </p>
               <p class="text-sm text-gray-500">
-                Método de pago: {{ cert.paymentMethod | titlecase }}
+                Método de pago: {{ cert.paymentMethodLabel | uppercase }}
               </p>
             </div>
 
@@ -57,18 +59,14 @@ import { InfiniteScrollWrapperComponent, PdfService } from '../../../../shared';
               >
                 🖨️ Reimprimir
               </button>
-              <button
-                (click)="download(cert)"
-                class="bg-gray-100 text-sm text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200"
-              >
-                ⬇️ Descargar
-              </button>
             </div>
             }
           </div>
         </infinite-scroll-wrapper>
       </div>
-      }
+      } @else {
+      <div class="p-4">SIN CERTIFICADOS</div>
+      } }
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close color="warn">Cerrar</button>

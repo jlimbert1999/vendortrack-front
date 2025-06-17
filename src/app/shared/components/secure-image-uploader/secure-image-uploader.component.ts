@@ -17,13 +17,13 @@ import { FileUploadService } from '../../services/file-upload.service';
   selector: 'secure-image-uploader',
   imports: [CommonModule, MatIconModule, MatButtonModule],
   template: `
-    <div class="flex flex-col border border-slate-500 px-3 py-1 rounded-xl">
+    <div class="flex flex-col border border-slate-500 p-3 rounded-xl">
       @if(imageDataUrl()){
       <figure class="flex justify-center items-center rounded-2xl mb-4">
         <img
           [src]="imageDataUrl()"
           alt="Image preview"
-          class="object-contain rounded-2xl max-h-[350px]"
+          class="object-contain rounded-2xl max-h-[300px]"
         />
       </figure>
       }
@@ -77,7 +77,6 @@ export class SecureImageUploaderComponent {
     this.destroyRef.onDestroy(() => {
       if (this.imageDataUrl()?.startsWith('blob:')) {
         // * If image is a blob with createObjectURL, free memory
-        console.log('removing blob url', this.imageDataUrl());
         URL.revokeObjectURL(this.imageDataUrl()!);
       }
     });

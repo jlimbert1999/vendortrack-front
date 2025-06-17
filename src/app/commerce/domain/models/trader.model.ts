@@ -4,6 +4,7 @@ interface traderProps {
   firstName: string;
   lastNamePaternal: string;
   lastNameMaternal: string;
+  apellidoCasada: string;
   dni: string;
   address: string;
   phone: string;
@@ -12,10 +13,11 @@ interface traderProps {
 
 export class Trader {
   id: string;
-  photo: string;
+  photo: string | null;
   firstName: string;
   lastNamePaternal: string;
   lastNameMaternal: string;
+  apellidoCasada: string;
   dni: string;
   address: string;
   phone: string;
@@ -27,6 +29,7 @@ export class Trader {
     firstName,
     lastNamePaternal,
     lastNameMaternal,
+    apellidoCasada,
     dni,
     address,
     phone,
@@ -41,9 +44,10 @@ export class Trader {
     this.address = address;
     this.phone = phone;
     this.grantDate = grantDate;
+    this.apellidoCasada = apellidoCasada;
   }
 
   get fullName() {
-    return `${this.firstName} ${this.lastNamePaternal} ${this.lastNameMaternal}`;
+    return `${this.firstName} ${this.lastNamePaternal} ${this.lastNameMaternal} ${this.apellidoCasada}`;
   }
 }

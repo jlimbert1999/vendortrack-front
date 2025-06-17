@@ -5,6 +5,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,20 +17,21 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { StallService } from '../../services';
 import {
+  StallDialogComponent,
   CertificateHistoryComponent,
   GenerateCertificateDialogComponent,
-  StallDialogComponent,
 } from '../../dialogs';
 import { Stall } from '../../../domain';
 @Component({
   selector: 'app-stalls',
   imports: [
-    MatToolbarModule,
-    MatButtonModule,
+    CommonModule,
     MatIconModule,
-    MatPaginatorModule,
     MatMenuModule,
     MatTableModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatPaginatorModule,
   ],
   template: `
     <mat-toolbar>
@@ -42,24 +45,24 @@ import { Stall } from '../../../domain';
       </div>
     </mat-toolbar>
     <table mat-table [dataSource]="dataSource()">
-      <ng-container matColumnDef="market">
-        <th mat-header-cell *matHeaderCellDef>Mercado</th>
-        <td mat-cell *matCellDef="let element">
-          {{ element.market.name }}
+      <ng-container matColumnDef="number">
+        <th mat-header-cell *matHeaderCellDef>Numero</th>
+        <td mat-cell *matCellDef="let element" class="w-12">
+          {{ element.number }}
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="number">
-        <th mat-header-cell *matHeaderCellDef>Numero</th>
+      <ng-container matColumnDef="market">
+        <th mat-header-cell *matHeaderCellDef>Mercado</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.number }}
+          {{ element.market }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="category">
         <th mat-header-cell *matHeaderCellDef>Categoria</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.category.name }}
+          {{ element.category }}
         </td>
       </ng-container>
 
@@ -67,6 +70,19 @@ import { Stall } from '../../../domain';
         <th mat-header-cell *matHeaderCellDef>Ubicacion</th>
         <td mat-cell *matCellDef="let element">
           {{ element.location }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="area">
+        <th mat-header-cell *matHeaderCellDef>Área / m2</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.area }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="trader">
+        <th mat-header-cell *matHeaderCellDef>Comerciante</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.trader.fullName | titlecase }}
         </td>
       </ng-container>
 
@@ -82,11 +98,11 @@ import { Stall } from '../../../domain';
               <span>Editar</span>
             </button>
             <button mat-menu-item (click)="generateCertificate(item)">
-              <mat-icon>health_and_safety</mat-icon>
-              <span>Generar Certificado</span>
+              <mat-icon>fact_check</mat-icon>
+              <span>Generar certificado</span>
             </button>
             <button mat-menu-item (click)="certificateHistory(item)">
-              <mat-icon>health_and_safety</mat-icon>
+              <mat-icon>format_list_bulleted</mat-icon>
               <span>Historial de certificados</span>
             </button>
           </mat-menu>
@@ -99,14 +115,15 @@ import { Stall } from '../../../domain';
         <td class="mat-cell p-3" colspan="4">No se encontraron resultados</td>
       </tr>
     </table>
+    @if (dataSize() > limit()){
     <mat-paginator
-      aria-label="Select page of users search results"
       showFirstLastButtons
       [length]="dataSize()"
       [pageIndex]="index()"
       [pageSize]="10"
       (page)="onPageChange($event)"
     />
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -121,7 +138,15 @@ export default class StallsComponent {
   offset = computed<number>(() => this.limit() * this.index());
   term = signal<string>('');
 
-  readonly COLUMNS = ['market', 'number', 'category', 'location', 'options'];
+  readonly COLUMNS = [
+    'number',
+    'market',
+    'category',
+    'location',
+    'area',
+    'trader',
+    'options',
+  ];
 
   ngOnInit(): void {
     this.getData();
@@ -138,36 +163,30 @@ export default class StallsComponent {
 
   create(): void {
     const dialogRef = this.dialogRef.open(StallDialogComponent, {
-      width: '800px',
-      maxWidth: '800px',
+      width: '600px',
+      maxWidth: '600px',
     });
     dialogRef.afterClosed().subscribe((result?) => {
       if (!result) return;
-      // this.dataSource.update((values) => {
-      //   if (values.length === this.limit()) {
-      //     values.pop();
-      //   }
-      //   return [result, ...values];
-      // });
-      // this.datasize.update((value) => (value += 1));
-      // this.treatments(result);
+      this.dataSource.update((values) => [result, ...values].slice(0, this.limit()));
+      this.dataSize.update((value) => (value += 1));
     });
   }
 
-  update(element: any) {
+  update(element: Stall) {
     const dialogRef = this.dialogRef.open(StallDialogComponent, {
       width: '800px',
       maxWidth: '800px',
       data: element,
     });
-    // dialogRef.afterClosed().subscribe((result: datasource) => {
-    //   if (!result) return;
-    //   this.datasource.update((values) => {
-    //     const index = values.findIndex((el) => el.owner.id === result.owner.id);
-    //     values[index] = result;
-    //     return [...values];
-    //   });
-    // });
+    dialogRef.afterClosed().subscribe((result: Stall|undefined) => {
+      if (!result) return;
+      this.dataSource.update((values) => {
+        const index = values.findIndex(({ id }) => id === result.id);
+        values[index] = result;
+        return [...values];
+      });
+    });
   }
 
   certificateHistory(item: Stall) {

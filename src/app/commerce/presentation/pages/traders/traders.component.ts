@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { TraderDialogComponent } from '../../dialogs';
 import { TraderService } from '../../services';
+import { Trader } from '../../../domain';
 
 @Component({
   selector: 'app-traders',
@@ -43,7 +44,7 @@ import { TraderService } from '../../services';
       <ng-container matColumnDef="fullName">
         <th mat-header-cell *matHeaderCellDef>Nombre</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.firstName | titlecase }}    {{ element.lastNamePaternal | titlecase }}
+          {{ element.fullName | titlecase }}
         </td>
       </ng-container>
 
@@ -54,29 +55,33 @@ import { TraderService } from '../../services';
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="grantDate">
-        <th mat-header-cell *matHeaderCellDef>Fecha </th>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Telefono</th>
         <td mat-cell *matCellDef="let element">
-          <!-- {{ element.breed.species }} - {{ element.breed.name }} -->
+          {{ element.phone }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef>Direccion</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.address }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="grantDate">
+        <th mat-header-cell *matHeaderCellDef>Fecha concesion</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.grantDate | date : 'shortDate' }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="options">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let item" class="w-8">
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>more_vert</mat-icon>
+          <button mat-icon-button (click)="update(item)">
+            <mat-icon>edit</mat-icon>
           </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="update(item)">
-              <mat-icon>edit</mat-icon>
-              <span>Editar</span>
-            </button>
-            <button mat-menu-item>
-              <mat-icon>health_and_safety</mat-icon>
-              <span>Historial de capturas</span>
-            </button>
-          </mat-menu>
         </td>
       </ng-container>
 
@@ -86,14 +91,15 @@ import { TraderService } from '../../services';
         <td class="mat-cell p-3" colspan="4">No se encontraron resultados</td>
       </tr>
     </table>
+    @if (dataSize() > limit()){
     <mat-paginator
-      aria-label="Select page of users search results"
       showFirstLastButtons
       [length]="dataSize()"
       [pageIndex]="index()"
       [pageSize]="10"
       (page)="onPageChange($event)"
     />
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -101,14 +107,21 @@ export default class TradersComponent implements OnInit {
   private dialogRef = inject(MatDialog);
   private traderService = inject(TraderService);
 
-  dataSource = signal<any[]>([]);
+  dataSource = signal<Trader[]>([]);
   limit = signal<number>(10);
   index = signal<number>(0);
   dataSize = signal<number>(0);
   offset = computed<number>(() => this.limit() * this.index());
   term = signal<string>('');
 
-  readonly COLUMNS = ['fullName', 'dni', 'grantDate', 'options'];
+  readonly COLUMNS = [
+    'fullName',
+    'dni',
+    'phone',
+    'grantDate',
+    'address',
+    'options',
+  ];
 
   ngOnInit(): void {
     this.getData();
@@ -120,42 +133,36 @@ export default class TradersComponent implements OnInit {
       .subscribe(({ traders, length }) => {
         this.dataSource.set(traders);
         this.dataSize.set(length);
-        console.log(traders);
       });
   }
 
   create(): void {
     const dialogRef = this.dialogRef.open(TraderDialogComponent, {
-      width: '800px',
-      maxWidth: '800px',
+      width: '1100px',
+      maxWidth: '1100px',
     });
     dialogRef.afterClosed().subscribe((result?) => {
       if (!result) return;
-      // this.dataSource.update((values) => {
-      //   if (values.length === this.limit()) {
-      //     values.pop();
-      //   }
-      //   return [result, ...values];
-      // });
-      // this.datasize.update((value) => (value += 1));
-      // this.treatments(result);
+      this.dataSource.update((val) => [result, ...val].slice(0, this.limit()));
+      this.dataSize.update((value) => (value += 1));
     });
   }
 
-  update(element: any) {
+  update(element: Trader) {
     const dialogRef = this.dialogRef.open(TraderDialogComponent, {
-      width: '800px',
-      maxWidth: '800px',
+      width: '1100px',
+      maxWidth: '1100px',
       data: element,
     });
-    // dialogRef.afterClosed().subscribe((result: datasource) => {
-    //   if (!result) return;
-    //   this.datasource.update((values) => {
-    //     const index = values.findIndex((el) => el.owner.id === result.owner.id);
-    //     values[index] = result;
-    //     return [...values];
-    //   });
-    // });
+
+    dialogRef.afterClosed().subscribe((result: Trader) => {
+      if (!result) return;
+      this.dataSource.update((values) => {
+        const index = values.findIndex(({ id }) => id === result.id);
+        values[index] = result;
+        return [...values];
+      });
+    });
   }
 
   onPageChange({ pageIndex, pageSize }: PageEvent) {

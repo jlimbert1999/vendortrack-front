@@ -1,8 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs';
-import { StallMapper, stallResponde } from '../../infrastructure';
+import { environment } from '../../../../environments/environment';
+import {
+  StallMapper,
+  stallResponde,
+  traderResponse,
+} from '../../infrastructure';
 
 @Injectable({
   providedIn: 'root',
@@ -13,13 +17,8 @@ export class StallService {
 
   create(form: Object) {
     return this.http
-      .post<any>(this.URL, { ...form })
-      .pipe
-      // map((resp) => ({
-      //   owner: OwnerMapper.fromResponse(resp),
-      //   pets: resp.pets.map((pet) => PetMapper.fromResponse(pet)),
-      // }))
-      ();
+      .post<stallResponde>(this.URL, { ...form })
+      .pipe(map((resp) => StallMapper.fromResponse(resp)));
   }
 
   update(traderId: string, form: Object) {
@@ -49,15 +48,17 @@ export class StallService {
       );
   }
 
-  searchTraders(term?: string) {
-    return this.http.get<any[]>(`${this.URL}/search/traders`).pipe(
-      map((resp) =>
-        resp.map((item) => ({
-          value: item.id,
-          label: `${item.firstName} ${item.lastNamePaternal} ${item.lastNameMaternal} - ${item.dni}`,
-        }))
-      )
-    );
+  searchTraders(term: string) {
+    return this.http
+      .get<traderResponse[]>(`${this.URL}/search/traders/${term}`)
+      .pipe(
+        map((resp) =>
+          resp.map((item) => ({
+            value: item.id,
+            label: `${item.firstName} ${item.lastNamePaternal} ${item.lastNameMaternal} - ${item.dni}`,
+          }))
+        )
+      );
   }
 
   getMarkets(term?: string) {

@@ -7,6 +7,7 @@ interface stallProps {
   location: string;
   market: string;
   category: string;
+  taxZone: string;
   trader?: Trader;
 }
 export class Stall {
@@ -16,6 +17,7 @@ export class Stall {
   location: string;
   market: string;
   category: string;
+  taxZone: string;
   trader?: Trader;
   constructor({
     id,
@@ -25,6 +27,7 @@ export class Stall {
     market,
     trader,
     category,
+    taxZone,
   }: stallProps) {
     this.id = id;
     this.number = number;
@@ -33,5 +36,6 @@ export class Stall {
     this.market = market;
     this.trader = trader;
     this.category = category;
+    this.taxZone = taxZone;
   }
 }

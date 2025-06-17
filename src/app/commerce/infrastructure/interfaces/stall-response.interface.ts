@@ -8,6 +8,7 @@ export interface stallResponde {
   market: marketProps;
   trader?: traderResponse;
   category: categoryProps;
+  taxZone: taxZone;
 }
 
 interface categoryProps {
@@ -16,6 +17,11 @@ interface categoryProps {
 }
 
 interface marketProps {
+  id: number;
+  name: string;
+}
+
+interface taxZone {
   id: number;
   name: string;
 }

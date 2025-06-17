@@ -5,8 +5,9 @@ import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
-import { imageToBase64 } from '../../../helpers';
+import { formatDate, imageToBase64 } from '../../../helpers';
 import { Certificate } from '../../commerce/domain';
+import { environment } from '../../../environments/environment';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -21,11 +22,18 @@ export class PdfService {
       tap((doc) => pdfMake.createPdf(doc).print())
     );
   }
+
   private async pdfContent(certificate: Certificate) {
     const headerIamge = await imageToBase64('images/logos/alcaldia.jpeg');
+    const qrData = `${environment.publicUrl}/certificates/verify/${certificate.id}`;
+    const photo = certificate.trader.photo
+      ? await imageToBase64(certificate.trader.photo)
+      : null;
+
     const doc: TDocumentDefinitions = {
+      pageSize: 'LETTER',
       content: [
-        { image: headerIamge, width: 180, alignment: 'center' },
+        { image: headerIamge, width: 160, alignment: 'center' },
         {
           text: 'CERTIFICADO DE CONCESIÓN DE SITIO MUNICIPAL',
           style: 'theme',
@@ -46,7 +54,7 @@ export class PdfService {
                         { text: 'NºID: ', style: 'theme' },
                         { text: certificate.code, bold: true },
                       ],
-                      fontSize: 40,
+                      fontSize: 30,
                       bold: true,
                       alignment: 'center',
                     },
@@ -68,6 +76,7 @@ export class PdfService {
           columns: [
             {
               width: '*',
+              fontSize: 11,
               lineHeight: 1.8,
               stack: [
                 {
@@ -117,18 +126,22 @@ export class PdfService {
               width: 120,
               stack: [
                 {
-                  canvas: [
-                    {
-                      type: 'rect',
-                      x: 0,
-                      y: 0,
-                      w: 80,
-                      h: 80,
-                      r: 0,
-                      lineColor: '#000000',
-                      lineWidth: 1,
-                    },
-                  ],
+                  ...(photo
+                    ? { image: photo, width: 80 }
+                    : {
+                        canvas: [
+                          {
+                            type: 'rect',
+                            x: 0,
+                            y: 0,
+                            w: 80,
+                            h: 80,
+                            r: 0,
+                            lineColor: '#000000',
+                            lineWidth: 1,
+                          },
+                        ],
+                      }),
                 },
                 {
                   marginTop: 15,
@@ -143,6 +156,7 @@ export class PdfService {
         },
         {
           marginTop: 10,
+          fontSize: 11,
           lineHeight: 1.8,
           stack: [
             {
@@ -153,8 +167,8 @@ export class PdfService {
             },
             {
               text: [
-                { text: 'ZONA TRIBUTARIA ', style: 'theme' },
-                { text: 'zona' },
+                { text: 'ZONA TRIBUTARIA: ', style: 'theme' },
+                { text: certificate.stall.taxZone },
               ],
             },
             {
@@ -165,7 +179,7 @@ export class PdfService {
                       text: 'FECHA DE CONCESION: ',
                       style: 'theme',
                     },
-                    { text: certificate.trader.grantDate.toLocaleString() },
+                    { text: formatDate(certificate.trader.grantDate) },
                   ],
                 },
                 {
@@ -189,7 +203,7 @@ export class PdfService {
               text: [
                 { text: 'VIGENCIA: ', style: 'theme' },
                 {
-                  text: certificate.startDate.toLocaleString(),
+                  text: formatDate(certificate.startDate),
                   characterSpacing: 2,
                 },
               ],
@@ -198,7 +212,7 @@ export class PdfService {
               text: [
                 { text: '      AL: ', style: 'theme' },
                 {
-                  text: certificate.endDate.toLocaleString(),
+                  text: formatDate(certificate.endDate),
                   characterSpacing: 2,
                 },
               ],
@@ -210,7 +224,10 @@ export class PdfService {
           alignment: 'center',
           text: [
             { text: 'SACABA, ', style: 'theme' },
-            { text: certificate.createdAt.toLocaleString(), characterSpacing: 2 },
+            {
+              text: formatDate(new Date()),
+              characterSpacing: 2,
+            },
           ],
         },
         {
@@ -229,7 +246,7 @@ export class PdfService {
             {
               width: 120,
               alignment: 'right',
-              qr: 'http://localhost:4200/verify/22324-434344-3443434344-43',
+              qr: qrData,
               fit: 100,
             },
           ],

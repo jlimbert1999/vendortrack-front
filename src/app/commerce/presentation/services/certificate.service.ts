@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { CertificateMapper, certificateResponse } from '../../infrastructure';
 
 @Injectable({
@@ -23,7 +23,15 @@ export class CertificateService {
     return this.http
       .get<certificateResponse[]>(`${this.URL}/history/${stallId}`, { params })
       .pipe(
-        map((resp) => resp.map((item) => CertificateMapper.fromReponse(item)))
+        tap((resp) => console.log(resp)),
+        map((resp) => resp.map((item) => CertificateMapper.fromReponse(item))),
+        tap((resp) => console.log(resp))
       );
+  }
+
+  verify(id: string) {
+    return this.http
+      .get<certificateResponse>(`${this.URL}/verify/${id}`)
+      .pipe(map((resp) => CertificateMapper.fromReponse(resp)));
   }
 }

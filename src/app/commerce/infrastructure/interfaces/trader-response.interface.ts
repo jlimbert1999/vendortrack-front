@@ -4,6 +4,7 @@ export interface traderResponse {
   firstName: string;
   lastNamePaternal: string;
   lastNameMaternal: string;
+  apellidoCasada: string;
   dni: string;
   address: string;
   phone: string;

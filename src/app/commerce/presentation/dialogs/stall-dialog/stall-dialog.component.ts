@@ -19,8 +19,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+
 import { selectOption, SelectSearchComponent } from '../../../../shared';
-import { StallService, TraderService } from '../../services';
+import { StallService } from '../../services';
 
 @Component({
   selector: 'app-stall-dialog',
@@ -39,12 +40,13 @@ import { StallService, TraderService } from '../../services';
     <mat-dialog-content>
       <div class="py-2">
         <form [formGroup]="stallForm">
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-x-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div class="col-span-2">
               <select-search
                 title="Seleccionar Mercado"
                 [items]="markets()"
                 (onSelect)="onSelect($event, 'marketId')"
+                [required]="true"
               />
             </div>
             <div class="col-span-2">
@@ -52,45 +54,48 @@ import { StallService, TraderService } from '../../services';
                 title="Seleccionar Categoria"
                 [items]="categories()"
                 (onSelect)="onSelect($event, 'categoryId')"
-              />
-            </div>
-            <div class="col-span-4">
-              <select-search
-                (onTyped)="searchTraders($event)"
-                title="Seleccionar Comerciante"
-                [items]="traders()"
-                [autoFilter]="false"
-                (onSelect)="onSelect($event, 'traderId')"
+                [required]="true"
               />
             </div>
             <div class="col-span-2">
+              <select-search
+                title="Zona tibutaria"
+                [items]="taxZones()"
+                (onSelect)="onSelect($event, 'taxZoneId')"
+                [required]="true"
+              />
+            </div>
+            <div class="col-span-2">
+              <select-search
+                (onTyped)="searchTraders($event)"
+                title="Seleccionar Comerciante"
+                placeholderLabel="Nombre o Numero de CI"
+                [items]="traders()"
+                [autoFilter]="false"
+                (onSelect)="onSelect($event, 'traderId')"
+                [required]="true"
+              />
+            </div>
+            <div>
               <mat-form-field>
                 <mat-label>Numero Puesto</mat-label>
                 <input matInput formControlName="number" />
               </mat-form-field>
             </div>
-            <div class="col-span-2">
+            <div>
               <mat-form-field>
-                <mat-label>Area en M2</mat-label>
+                <mat-label>Area / m2</mat-label>
                 <input matInput formControlName="area" />
               </mat-form-field>
             </div>
             <div class="col-span-2">
               <mat-form-field>
-                <mat-label>Ubicacion</mat-label>
-                <input matInput formControlName="location" />
-              </mat-form-field>
-            </div>
-            <div class="col-span-2">
-              <mat-form-field>
-                <mat-label>Zona Tributaria</mat-label>
-                <mat-select formControlName="taxZoneId">
-                  @for (zone of taxZones(); track $index) {
-                  <mat-option [value]="zone.value">
-                    {{ zone.label }}
-                  </mat-option>
-                  }
-                </mat-select>
+                <mat-label>Ubicacion puesto</mat-label>
+                <input
+                  matInput
+                  formControlName="location"
+                  placeholder="Ejemplo: Numero de piso"
+                />
               </mat-form-field>
             </div>
           </div>
@@ -142,14 +147,14 @@ export class StallDialogComponent {
   }
 
   searchTraders(term: string) {
-    return this.stallService.searchTraders().subscribe((resp) => {
+    return this.stallService.searchTraders(term).subscribe((resp) => {
       this.traders.set(resp);
     });
   }
 
   onSelect(
     value: string,
-    formProperty: 'traderId' | 'marketId' | 'categoryId'
+    formProperty: 'traderId' | 'marketId' | 'categoryId' | 'taxZoneId'
   ) {
     this.stallForm.get(formProperty)?.setValue(value);
   }
