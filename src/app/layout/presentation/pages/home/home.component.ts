@@ -5,13 +5,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+
 import { AuthService } from '../../../../auth/presentation/services/auth.service';
-import { RouterModule } from '@angular/router';
+import { ProfileComponent } from '../../components';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +24,9 @@ import { RouterModule } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     MatListModule,
-    RouterModule
+    RouterModule,
+    OverlayModule,
+    ProfileComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -34,6 +39,7 @@ export default class HomeComponent {
   private readonly _mobileQueryListener: () => void;
 
   menu = inject(AuthService).menu;
+  isProfileOpen = signal(false);
 
   constructor() {
     const media = inject(MediaMatcher);
@@ -47,5 +53,9 @@ export default class HomeComponent {
 
   ngOnDestroy(): void {
     this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
+  }
+
+  toggleProfile() {
+    this.isProfileOpen.update((value) => !value);
   }
 }

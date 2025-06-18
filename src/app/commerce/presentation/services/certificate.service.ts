@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, tap } from 'rxjs';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
+import { catchError, map, of, tap, throwError } from 'rxjs';
 import { CertificateMapper, certificateResponse } from '../../infrastructure';
 
 @Injectable({
@@ -30,8 +34,18 @@ export class CertificateService {
   }
 
   verify(id: string) {
-    return this.http
-      .get<certificateResponse>(`${this.URL}/verify/${id}`)
-      .pipe(map((resp) => CertificateMapper.fromReponse(resp)));
+    return this.http.get<certificateResponse>(`${this.URL}/verify/${id}`).pipe(
+      map((resp) => CertificateMapper.fromReponse(resp)),
+      catchError((error) => {
+        // if (error instanceof HttpErrorResponse) {
+        //   return of(400);
+        // }
+        return throwError(() => 400);
+      })
+    );
   }
+
+  // private hendleVerfiicationErro(error: HttpErrorResponse) {
+  //   if(error.status)
+  // }
 }

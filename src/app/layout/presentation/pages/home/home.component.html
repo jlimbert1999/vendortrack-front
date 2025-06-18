@@ -3,7 +3,32 @@
     <button matIconButton (click)="snav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
+    <span class="flex-1"></span>
+    <button
+      class="size-8 rounded-full overflow-hidden p-0 border-none focus:outline-none focus:ring-2 focus:ring-blue-300"
+      aria-label="Profile button"
+      cdkOverlayOrigin
+      #trigger="cdkOverlayOrigin"
+      (click)="toggleProfile()"
+    >
+      <img
+        src="images/icons/user.png"
+        alt="Avatar del usuario"
+        class="w-full h-full object-cover"
+      />
+    </button>
   </mat-toolbar>
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="trigger"
+    [cdkConnectedOverlayOpen]="isProfileOpen()"
+    (overlayOutsideClick)="isProfileOpen.set(false)"
+  >
+    <div class="overlay w-full sm:w-[380px] rounded-xl">
+      <profile [(isOpen)]="isProfileOpen" />
+    </div>
+  </ng-template>
 
   <mat-sidenav-container
     class="example-sidenav-container"

@@ -8,12 +8,14 @@ import {
   resource,
 } from '@angular/core';
 import { CertificateService } from '../../services';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, of, throwError } from 'rxjs';
 import { Certificate } from '../../../domain';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-verify-certificate',
-  imports: [],
+  imports: [CommonModule],
   template: `
     <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-xl p-8 max-w-2xl w-full">
@@ -87,8 +89,17 @@ import { Certificate } from '../../../domain';
             <p class="text-xl text-gray-900">120 horas</p>
           </div>
         </div> -->
+        @if(certificate.error()){
+        <p>hay errro</p>
+        <pre> Cauase: {{ certificate.error()?.cause | json }} </pre>
 
-        <div class="mt-6 p-4 rounded-lg text-center">
+        <pre> Messae: {{ certificate.error()?.message | json }} </pre>
+
+        <pre> Name: {{ certificate.error()?.name | json }} </pre>
+        <pre> Stack: {{ certificate.error()?.stack | json }}</pre>
+        }
+
+        <!-- <div class="mt-6 p-4 rounded-lg text-center">
           <p class="text-xl font-bold" *ngIf="certificadoValido">
             <i class="fas fa-check-circle mr-2"></i> ¡Certificado Válido!
           </p>
@@ -107,7 +118,7 @@ import { Certificate } from '../../../domain';
 
         <div class="mt-8 text-center text-gray-500 text-sm">
           <p>&copy; 2025 Gobierno Autonomo Municipal de Sacaba</p>
-        </div>
+        </div> -->
       </div>
     </div>
   `,
