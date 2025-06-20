@@ -25,19 +25,14 @@ import { AuthService } from '../../services/auth.service';
     MatIconModule,
   ],
   template: `
+    <div class="p-3 absolute top-0 left-0">
+      <img src="images/logos/gams.png" class="h-12 sm:h-18" />
+    </div>
     <div class="h-screen flex flex-col w-screen">
-      <div
-        class="flex-1 flex flex-col items-center justify-center px-2 sm:px-0"
-      >
-        <div
-          class="shadow-md border rounded-lg p-5 mx-2 sm:mx-0 w-full sm:w-[450px]"
-        >
+      <div class="flex-1 flex flex-col items-center justify-center">
+        <div class="shadow-md border rounded-lg p-5 w-11/12 sm:w-[450px]">
           <div class="sm:mx-auto mb-6">
-            <img
-              class="mx-auto size-20 mb-2"
-              src="images/icons/app.png"
-              alt="Icon app"
-            />
+            <img class="mx-auto size-20 mb-2" src="images/icons/app.png" />
             <p class="text-center text-xl font-bold font-sans">
               Sistema de Registro y Certificación de Comerciantes
             </p>
@@ -84,21 +79,15 @@ import { AuthService } from '../../services/auth.service';
                 Recordar nombre usuario
               </mat-checkbox>
             </div>
-            <button type="submit" mat-flat-button class="w-full">
+            <button
+              type="submit"
+              mat-flat-button
+              class="w-full"
+              [disabled]="loginForm.invalid"
+            >
               Ingresar
             </button>
           </form>
-        </div>
-      </div>
-      <div class="flex justify-start items-center gap-x-4 p-3 sm:p-4">
-        <img
-          src="images/logos/gams-shield.png"
-          alt="Institution icon"
-          class="w-8"
-        />
-        <div class="text-gray-600">
-          <p class="block text-sm/6">Gobierno Autonomo Municipal de Sacaba</p>
-          <p class="block text-xs">Una ciudad con valor</p>
         </div>
       </div>
     </div>

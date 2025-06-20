@@ -14,7 +14,6 @@ import { MatListModule } from '@angular/material/list';
 
 import { AuthService } from '../../../../auth/presentation/services/auth.service';
 import { ProfileComponent } from '../../components';
-import { OverlayModule } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +24,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatIconModule,
     MatListModule,
     RouterModule,
-    OverlayModule,
     ProfileComponent,
   ],
   templateUrl: './home.component.html',
@@ -53,9 +51,5 @@ export default class HomeComponent {
 
   ngOnDestroy(): void {
     this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
-  }
-
-  toggleProfile() {
-    this.isProfileOpen.update((value) => !value);
   }
 }

@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 import { environment } from '../../../../environments/environment';
-import { iwtPayload } from '../infrastructure';
+import { jwtPayload } from '../infrastructure';
 
 export interface menu {
   icon: string;
@@ -26,23 +26,11 @@ interface loginProps {
 export class AuthService {
   private http = inject(HttpClient);
   private readonly URL: string = environment.apiUrl;
-  private _menu = signal<menu[]>([
-    {
-      routerLink: 'traders',
-      label: 'Comerciantes',
-      resource: '',
-      icon: '',
-    },
-    {
-      routerLink: 'stalls',
-      label: 'Puestos',
-      resource: '',
-      icon: '',
-    },
-  ]);
+
+  private _menu = signal<menu[]>([]);
   menu = computed(() => this._menu());
 
-  private _user = signal<iwtPayload | null>(null);
+  private _user = signal<jwtPayload | null>(null);
   user = computed(() => this._user());
 
   constructor() {}
@@ -78,7 +66,8 @@ export class AuthService {
         menu: menu[];
       }>(`${this.URL}/auth`)
       .pipe(
-        map(({ token }) => {
+        map(({ token, menu }) => {
+          this._menu.set(menu);
           this.setAuthentication(token);
           return true;
         }),
@@ -95,7 +84,8 @@ export class AuthService {
   }
 
   private setAuthentication(token: string) {
-    this._user.set(jwtDecode(token));
+    const payload: jwtPayload = jwtDecode(token);
+    this._user.set(payload);
     localStorage.setItem('token', token);
   }
 }
