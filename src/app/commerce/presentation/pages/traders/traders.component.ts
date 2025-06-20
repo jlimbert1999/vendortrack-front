@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TraderDialogComponent } from '../../dialogs';
 import { TraderService } from '../../services';
 import { Trader } from '../../../domain';
+import { SearchInputComponent } from '../../../../shared';
 
 @Component({
   selector: 'app-traders',
@@ -28,6 +29,7 @@ import { Trader } from '../../../domain';
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,
+    SearchInputComponent,
   ],
   template: `
     <mat-toolbar>
@@ -40,6 +42,11 @@ import { Trader } from '../../../domain';
         </button>
       </div>
     </mat-toolbar>
+    <div class="flex justify-end py-2">
+      <div class="w-full px-2 sm:w-1/4 h-11">
+        <search-input (onSearch)="search($event)" placeholder="Nombre / CI" />
+      </div>
+    </div>
     <table mat-table [dataSource]="dataSource()">
       <ng-container matColumnDef="fullName">
         <th mat-header-cell *matHeaderCellDef>Nombre</th>
@@ -136,10 +143,16 @@ export default class TradersComponent implements OnInit {
       });
   }
 
+  search(term: string) {
+    this.term.set(term);
+    this.index.set(0);
+    this.getData();
+  }
+
   create(): void {
     const dialogRef = this.dialogRef.open(TraderDialogComponent, {
-      width: '1100px',
-      maxWidth: '1100px',
+      width: '700px',
+      maxWidth: '700px',
     });
     dialogRef.afterClosed().subscribe((result?) => {
       if (!result) return;
@@ -150,8 +163,8 @@ export default class TradersComponent implements OnInit {
 
   update(element: Trader) {
     const dialogRef = this.dialogRef.open(TraderDialogComponent, {
-      width: '1100px',
-      maxWidth: '1100px',
+      width: '700px',
+      maxWidth: '700px',
       data: element,
     });
 

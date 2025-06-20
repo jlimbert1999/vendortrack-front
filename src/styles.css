@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@use "@angular/material" as mat;
 
 html,
 body {

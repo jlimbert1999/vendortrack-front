@@ -24,7 +24,7 @@ export class PdfService {
   }
 
   private async pdfContent(certificate: Certificate) {
-    const headerIamge = await imageToBase64('images/logos/alcaldia.jpeg');
+    const headerIamge = await imageToBase64('images/logos/gams.png');
     const qrData = `${environment.publicUrl}/certificates/verify/${certificate.id}`;
     const photo = certificate.trader.photo
       ? await imageToBase64(certificate.trader.photo)

@@ -19,7 +19,6 @@ export class TraderService {
   }
 
   update(traderId: string, form: Object, imageUploadedName: string | null) {
-    console.log(imageUploadedName);
     return this.http
       .patch<traderResponse>(`${this.URL}/${traderId}`, {
         ...form,

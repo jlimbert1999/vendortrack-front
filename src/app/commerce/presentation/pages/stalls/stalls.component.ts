@@ -22,6 +22,7 @@ import {
   GenerateCertificateDialogComponent,
 } from '../../dialogs';
 import { Stall } from '../../../domain';
+import { SearchInputComponent } from '../../../../shared';
 @Component({
   selector: 'app-stalls',
   imports: [
@@ -32,6 +33,7 @@ import { Stall } from '../../../domain';
     MatButtonModule,
     MatToolbarModule,
     MatPaginatorModule,
+    SearchInputComponent,
   ],
   template: `
     <mat-toolbar>
@@ -44,6 +46,14 @@ import { Stall } from '../../../domain';
         </button>
       </div>
     </mat-toolbar>
+    <div class="flex justify-end py-2">
+      <div class="w-full px-2 sm:w-1/4 h-11">
+        <search-input
+          (onSearch)="search($event)"
+          placeholder="Nombre comerciante / Nro. puesto"
+        />
+      </div>
+    </div>
     <table mat-table [dataSource]="dataSource()">
       <ng-container matColumnDef="number">
         <th mat-header-cell *matHeaderCellDef>Numero</th>
@@ -168,7 +178,9 @@ export default class StallsComponent {
     });
     dialogRef.afterClosed().subscribe((result?) => {
       if (!result) return;
-      this.dataSource.update((values) => [result, ...values].slice(0, this.limit()));
+      this.dataSource.update((values) =>
+        [result, ...values].slice(0, this.limit())
+      );
       this.dataSize.update((value) => (value += 1));
     });
   }
@@ -179,7 +191,7 @@ export default class StallsComponent {
       maxWidth: '800px',
       data: element,
     });
-    dialogRef.afterClosed().subscribe((result: Stall|undefined) => {
+    dialogRef.afterClosed().subscribe((result: Stall | undefined) => {
       if (!result) return;
       this.dataSource.update((values) => {
         const index = values.findIndex(({ id }) => id === result.id);
@@ -208,6 +220,12 @@ export default class StallsComponent {
   onPageChange({ pageIndex, pageSize }: PageEvent) {
     this.limit.set(pageSize);
     this.index.set(pageIndex);
+    this.getData();
+  }
+
+  search(term: string) {
+    this.term.set(term);
+    this.index.set(0);
     this.getData();
   }
 }

@@ -23,11 +23,11 @@ import { user } from '../../../infrastructure';
   selector: 'app-users-manage',
   imports: [
     CommonModule,
+    MatIconModule,
     MatTableModule,
     MatButtonModule,
-    MatPaginatorModule,
     MatToolbarModule,
-    MatIconModule,
+    MatPaginatorModule,
     SearchInputComponent,
   ],
   template: `
@@ -125,7 +125,7 @@ import { user } from '../../../infrastructure';
 })
 export default class UsersManageComponent implements OnInit {
   private userService = inject(UserService);
-  readonly dialogRef = inject(MatDialog);
+  private dialogRef = inject(MatDialog);
 
   datasource = signal<user[]>([]);
   datasize = signal(0);

@@ -33,9 +33,9 @@ import { Trader } from '../../../domain';
   selector: 'app-trader-dialog',
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     MatFormFieldModule,
     MatDatepickerModule,
+    MatDialogModule,
     MatInputModule,
     MatButtonModule,
     SecureImageUploaderComponent,
@@ -44,78 +44,74 @@ import { Trader } from '../../../domain';
   template: `
     <h2 mat-dialog-title>{{ data ? 'Editar' : 'Crear' }} Comerciante</h2>
     <mat-dialog-content>
-      <div class="flex flex-col sm:flex-row items-center gap-4">
-        <div class="w-full sm:w-1/3 flex">
-          <div class="w-full p-4">
-            <secure-image-uploader
-              label="Seleccionar foto"
-              [(file)]="image"
-              [(uploadedImage)]="this.currentFileUrl"
-            />
+      <form [formGroup]="traderForm" class="mt-2">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4">
+          <div>
+            <mat-form-field>
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="firstName" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>Apellido Paterno</mat-label>
+              <input matInput formControlName="lastNamePaternal" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>Apellido Materno</mat-label>
+              <input matInput formControlName="lastNameMaternal" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>Apellido de casada</mat-label>
+              <input matInput formControlName="apellidoCasada" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>CI</mat-label>
+              <input matInput formControlName="dni" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>Telefono</mat-label>
+              <input matInput formControlName="phone" />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field>
+              <mat-label>Fecha concesion</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                formControlName="grantDate"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="sm:col-span-2">
+            <mat-form-field>
+              <mat-label>Direccion</mat-label>
+              <input matInput formControlName="address" />
+            </mat-form-field>
           </div>
         </div>
-        <div class="w-full sm:w-2/3">
-          <form [formGroup]="traderForm">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4">
-              <div>
-                <mat-form-field>
-                  <mat-label>Nombre</mat-label>
-                  <input matInput formControlName="firstName" />
-                </mat-form-field>
-              </div>
-              <div>
-                <mat-form-field>
-                  <mat-label>Apellido Paterno</mat-label>
-                  <input matInput formControlName="lastNamePaternal" />
-                </mat-form-field>
-              </div>
-              <div>
-                <mat-form-field>
-                  <mat-label>Apellido Materno</mat-label>
-                  <input matInput formControlName="lastNameMaternal" />
-                </mat-form-field>
-              </div>
-              <div>
-                <mat-form-field>
-                  <mat-label>Apellido de casada</mat-label>
-                  <input matInput formControlName="apellidoCasada" />
-                </mat-form-field>
-              </div>
-              <div>
-                <mat-form-field>
-                  <mat-label>CI</mat-label>
-                  <input matInput formControlName="dni" />
-                </mat-form-field>
-              </div>
-              <div>
-                <mat-form-field>
-                  <mat-label>Telefono</mat-label>
-                  <input matInput formControlName="phone" />
-                </mat-form-field>
-              </div>
-              <div>
-                <mat-form-field>
-                  <mat-label>Fecha concesion</mat-label>
-                  <input
-                    matInput
-                    [matDatepicker]="picker"
-                    formControlName="grantDate"
-                  />
-                  <mat-datepicker-toggle
-                    matIconSuffix
-                    [for]="picker"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-              </div>
-              <div class="sm:col-span-2">
-                <mat-form-field>
-                  <mat-label>Direccion</mat-label>
-                  <input matInput formControlName="address" />
-                </mat-form-field>
-              </div>
-            </div>
-          </form>
+      </form>
+      <div class="flex justify-center w-full">
+        <div class="w-full sm:w-[350px]">
+          <secure-image-uploader
+            label="Seleccionar foto"
+            [(file)]="image"
+            [(uploadedImage)]="this.currentFileUrl"
+          />
         </div>
       </div>
     </mat-dialog-content>

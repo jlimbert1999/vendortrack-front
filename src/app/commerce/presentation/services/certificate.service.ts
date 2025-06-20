@@ -34,18 +34,15 @@ export class CertificateService {
   }
 
   verify(id: string) {
-    return this.http.get<certificateResponse>(`${this.URL}/verify/${id}`).pipe(
-      map((resp) => CertificateMapper.fromReponse(resp)),
-      catchError((error) => {
-        // if (error instanceof HttpErrorResponse) {
-        //   return of(400);
-        // }
-        return throwError(() => 400);
-      })
-    );
+    return this.http
+      .get<{ isValid: boolean; certificate: certificateResponse }>(
+        `${this.URL}/verify/${id}`
+      )
+      .pipe(
+        map(({ isValid, certificate }) => ({
+          isValid,
+          certificate: CertificateMapper.fromReponse(certificate),
+        }))
+      );
   }
-
-  // private hendleVerfiicationErro(error: HttpErrorResponse) {
-  //   if(error.status)
-  // }
 }
