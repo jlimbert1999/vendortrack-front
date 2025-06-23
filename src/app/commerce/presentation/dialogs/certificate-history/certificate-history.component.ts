@@ -35,32 +35,32 @@ import { InfiniteScrollWrapperComponent, PdfService } from '../../../../shared';
           [containerRef]="containerRef"
           (onScroll)="loadMore()"
         >
-          <div
-            class="shadow-sm border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between transition hover:shadow-md"
-          >
+          <div class="flex flex-col gap-y-2">
             @for (cert of certificates(); track $index) {
-            <div class="text-gray-700">
-              <p class="font-medium text-lg text-blue-600">
-                Código: {{ cert.code }}
-              </p>
-              <p class="text-sm text-gray-500">
-                Vigencia: {{ cert.startDate | date : 'shortDate' }} -
-                {{ cert.endDate | date : 'shortDate' }}
-              </p>
-              <p class="text-sm text-gray-500">
-                Método de pago: {{ cert.paymentMethodLabel | uppercase }}
-              </p>
-            </div>
+            <div class="p-4 sm:flex-row flex flex-col sm:items-center justify-between border rounded-lg">
+              <div class="text-gray-700">
+                <p class="font-medium text-lg text-blue-600">
+                  Código: {{ cert.code }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Vigencia: {{ cert.startDate | date : 'shortDate' }} -
+                  {{ cert.endDate | date : 'shortDate' }}
+                </p>
+                <p class="text-sm text-gray-500">
+                  Método de pago: {{ cert.paymentMethodLabel | uppercase }}
+                </p>
+              </div>
 
-            <div class="mt-3 sm:mt-0 sm:ml-6 flex gap-2">
-              <button
-                (click)="print(cert)"
-                class="bg-blue-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-              >
-                🖨️ Reimprimir
-              </button>
+              <div class="mt-3 sm:mt-0 sm:ml-6 flex gap-2">
+                <button
+                  (click)="print(cert)"
+                  class="bg-blue-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                >
+                  🖨️ Reimprimir
+                </button>
+              </div>
             </div>
-            }
+          }
           </div>
         </infinite-scroll-wrapper>
       </div>
@@ -108,9 +108,5 @@ export class CertificateHistoryComponent implements OnInit {
 
   print(cert: Certificate) {
     this.pdfService.generate(cert).subscribe();
-  }
-
-  download(cert: Certificate) {
-    // Lógica para reconstruir y lanzar pdfMake.download()
   }
 }

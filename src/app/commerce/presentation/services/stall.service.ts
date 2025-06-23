@@ -23,13 +23,8 @@ export class StallService {
 
   update(traderId: string, form: Object) {
     return this.http
-      .patch<any>(`${this.URL}/${traderId}`, form)
-      .pipe
-      // map((resp) => ({
-      //   owner: OwnerMapper.fromResponse(resp),
-      //   pets: resp.pets.map((pet) => PetMapper.fromResponse(pet)),
-      // }))
-      ();
+      .patch<stallResponde>(`${this.URL}/${traderId}`, form)
+      .pipe(map((resp) => StallMapper.fromResponse(resp)));
   }
 
   findAll(limit: number, offset: number, term?: string) {

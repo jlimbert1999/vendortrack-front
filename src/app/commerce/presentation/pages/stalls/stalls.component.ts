@@ -187,8 +187,8 @@ export default class StallsComponent {
 
   update(element: Stall) {
     const dialogRef = this.dialogRef.open(StallDialogComponent, {
-      width: '800px',
-      maxWidth: '800px',
+      width: '600px',
+      maxWidth: '600px',
       data: element,
     });
     dialogRef.afterClosed().subscribe((result: Stall | undefined) => {

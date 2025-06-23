@@ -2,9 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -19,15 +25,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 import { selectOption, SelectSearchComponent } from '../../../../shared';
 import { StallService } from '../../services';
+import { Stall } from '../../../domain';
 
 @Component({
   selector: 'app-stall-dialog',
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    MatIconModule,
     MatSelectModule,
     MatDialogModule,
     MatInputModule,
@@ -41,6 +50,7 @@ import { StallService } from '../../services';
       <div class="py-2">
         <form [formGroup]="stallForm">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            @if(!data){
             <div class="col-span-2">
               <select-search
                 title="Seleccionar Mercado"
@@ -65,7 +75,22 @@ import { StallService } from '../../services';
                 [required]="true"
               />
             </div>
+            }
             <div class="col-span-2">
+              @if(currentTraderFullName()){
+              <mat-form-field>
+                <mat-label>Comerciante</mat-label>
+                <input matInput type="text" [value]="currentTraderFullName()" readonly />
+                <button
+                  matSuffix
+                  matIconButton
+                  aria-label="Clear"
+                  (click)="currentTraderFullName.set(null)"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-form-field>
+              } @else {
               <select-search
                 (onTyped)="searchTraders($event)"
                 title="Seleccionar Comerciante"
@@ -75,19 +100,9 @@ import { StallService } from '../../services';
                 (onSelect)="onSelect($event, 'traderId')"
                 [required]="true"
               />
+              }
             </div>
-            <div>
-              <mat-form-field>
-                <mat-label>Numero Puesto</mat-label>
-                <input matInput formControlName="number" />
-              </mat-form-field>
-            </div>
-            <div>
-              <mat-form-field>
-                <mat-label>Area / m2</mat-label>
-                <input matInput formControlName="area" />
-              </mat-form-field>
-            </div>
+
             <div class="col-span-2">
               <mat-form-field>
                 <mat-label>Ubicacion puesto</mat-label>
@@ -96,6 +111,20 @@ import { StallService } from '../../services';
                   formControlName="location"
                   placeholder="Ejemplo: Numero de piso"
                 />
+              </mat-form-field>
+            </div>
+            @if(!data){
+            <div>
+              <mat-form-field>
+                <mat-label>Numero Puesto</mat-label>
+                <input matInput formControlName="number" />
+              </mat-form-field>
+            </div>
+            }
+            <div>
+              <mat-form-field>
+                <mat-label>Area / m2</mat-label>
+                <input matInput formControlName="area" />
               </mat-form-field>
             </div>
           </div>
@@ -111,30 +140,25 @@ import { StallService } from '../../services';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StallDialogComponent {
+export class StallDialogComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private stallService = inject(StallService);
   private dialogRef = inject(MatDialogRef);
 
-  data = inject(MAT_DIALOG_DATA);
+  data: Stall | undefined = inject(MAT_DIALOG_DATA);
 
-  stallForm = this.formBuilder.group({
-    number: ['', Validators.required],
-    area: ['', Validators.required],
-    location: ['', Validators.required],
-    traderId: ['', Validators.required],
-    marketId: ['', Validators.required],
-    categoryId: ['', Validators.required],
-    taxZoneId: ['', Validators.required],
-  });
-
+  stallForm = this.buildForm();
   traders = signal<selectOption<string>[]>([]);
   markets = toSignal(this.stallService.getMarkets(), { initialValue: [] });
   taxZones = toSignal(this.stallService.getTaxZones(), { initialValue: [] });
   categories = toSignal(this.stallService.getCategories(), {
     initialValue: [],
   });
-  taxZone = ['Distrito 1 ', 'Distrito 2', 'Distrito 3'];
+  currentTraderFullName = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.currentTraderFullName.set(this.data?.trader?.fullName.trim() ?? null);
+  }
 
   save(): void {
     const subscription = this.data
@@ -157,5 +181,23 @@ export class StallDialogComponent {
     formProperty: 'traderId' | 'marketId' | 'categoryId' | 'taxZoneId'
   ) {
     this.stallForm.get(formProperty)?.setValue(value);
+  }
+
+  private buildForm(): FormGroup {
+    return this.data
+      ? this.formBuilder.group({
+          area: [this.data.area, Validators.required],
+          location: [this.data.location, Validators.required],
+          traderId: [this.data.trader?.id, Validators.required],
+        })
+      : this.formBuilder.group({
+          number: ['', Validators.required],
+          area: ['', Validators.required],
+          location: ['', Validators.required],
+          traderId: ['', Validators.required],
+          marketId: ['', Validators.required],
+          categoryId: ['', Validators.required],
+          taxZoneId: ['', Validators.required],
+        });
   }
 }
