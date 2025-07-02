@@ -35,6 +35,14 @@ export class PdfService {
       content: [
         { image: headerIamge, width: 160, alignment: 'center' },
         {
+          text: 'Documento sin validez oficial (PRUEBA)',
+          color: 'red',
+          bold: true,
+          fontSize: 20,
+          absolutePosition: { x: 40, y: 550 },
+          opacity: 0.3,
+        },
+        {
           text: 'CERTIFICADO DE CONCESIÓN DE SITIO MUNICIPAL',
           style: 'theme',
           alignment: 'center',
@@ -72,7 +80,7 @@ export class PdfService {
           ],
         },
         {
-          marginTop: 30,
+          marginTop: 20,
           columns: [
             {
               width: '*',
@@ -232,7 +240,7 @@ export class PdfService {
         },
         {
           marginTop: 10,
-          marginBottom: 10,
+          marginBottom: 25,
           columns: [
             { text: '', width: 120 },
             {
@@ -306,7 +314,7 @@ export class PdfService {
           ],
         },
       ],
-      pageMargins: [40, 40, 40, 40],
+      pageMargins: [40, 40, 40, 30],
       background: function (_currentPage, pageSize) {
         return {
           canvas: [
