@@ -195,7 +195,6 @@ export class GenerateCertificateDialogComponent {
       .create(this.data.id, this.certificateForm.value)
       .pipe(
         switchMap((certiicate) => {
-          console.log(certiicate);
           return this.pdfService.generate(certiicate);
         })
       )

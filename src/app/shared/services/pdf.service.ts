@@ -34,14 +34,14 @@ export class PdfService {
       pageSize: 'LETTER',
       content: [
         { image: headerIamge, width: 160, alignment: 'center' },
-        {
-          text: 'Documento sin validez oficial (PRUEBA)',
-          color: 'red',
-          bold: true,
-          fontSize: 20,
-          absolutePosition: { x: 40, y: 550 },
-          opacity: 0.3,
-        },
+        // {
+        //   text: 'Documento sin validez oficial (PRUEBA)',
+        //   color: 'red',
+        //   bold: true,
+        //   fontSize: 20,
+        //   absolutePosition: { x: 40, y: 550 },
+        //   opacity: 0.3,
+        // },
         {
           text: 'CERTIFICADO DE CONCESIÓN DE SITIO MUNICIPAL',
           style: 'theme',
@@ -263,7 +263,7 @@ export class PdfService {
           style: 'theme',
           fontSize: 7,
           alignment: 'justify',
-          text: 'DECRETO MUNICIPAL N° 004/2025 “REGLAMENTO DE MERCADOS PÚBLICOS, CENTROS DE ABASTO, SITIOS MUNICIPALES, FERIAS ZONALES, VÍAS PÚBLICAS Y ESTABLECIMIENTOS DE ACTIVIDADES ECONÓMICAS”, SECCION II, REGULARIZACION DE SITIO MUNICIPAL POR FALLECIMIENTO Y FUERZA MAYOR.',
+          text: 'DECRETO MUNICIPAL N° 004/2025 “REGLAMENTO DE MERCADOS PÚBLICOS, CENTROS DE ABASTO, SITIOS MUNICIPALES, FERIAS ZONALES, VÍAS PÚBLICAS Y ESTABLECIMIENTOS DE ACTIVIDADES ECONÓMICAS”, SECCION III - IDENTIFICACION DE CONCESION DE SITIO O PUESTO MUNICIPAL, MEJORAS DEL SITIO MUNICIPAL.',
         },
         {
           marginTop: 3,
